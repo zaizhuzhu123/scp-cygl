@@ -1,0 +1,160 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.ws.soap2mml.cygl.scp.com/user" targetNamespace="http://www.ws.soap2mml.cygl.scp.com/user"
+	elementFormDefault="qualified">
+	<xs:element name="response">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="resultCode" type="xs:string" />
+				<xs:element name="resultDesc" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- createUser -->
+	<xs:element name="createUserRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="userInfo"
+					nillable="true" type="tns:userInfo" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="userInfo">
+		<xs:sequence>
+			<xs:element name="user" type="tns:user" />
+			<xs:element name="userAddInfo" type="tns:userAddInfo" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="user">
+		<xs:sequence>
+			<xs:element name="fullNumber" type="xs:string" />
+			<xs:element name="grpID" type="xs:string" />
+			<xs:element name="shortNumber" type="xs:string" />
+			<xs:element name="terminalType" type="xs:string" />
+			<xs:element name="userType" type="xs:string" />
+			<xs:element name="status" type="xs:string" />
+			<xs:element name="property" type="xs:string" />
+			<xs:element name="displayFlag" type="xs:string" />
+			<xs:element name="memPowerFlag" type="xs:string" />
+			<xs:element name="memVPNFuncFlag" type="xs:string" />
+			<xs:element name="memIMSFuncFlag" type="xs:string" />
+			<xs:element name="userCFUInfo" type="xs:string" />
+			<xs:element name="userCFBInfo" type="xs:string" />
+			<xs:element name="userCFNRInfo" type="xs:string" />
+			<xs:element name="userCFNLInfo" type="xs:string" />
+			<xs:element name="wGroupID" type="xs:string" />
+			<xs:element name="createTime" type="xs:string" />
+			<xs:element name="cugID" type="xs:string" />
+			<xs:element name="languageType" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="userAddInfo">
+		<xs:sequence>
+			<xs:element name="serviceNo" type="xs:string" />
+			<xs:element name="areaNo" type="xs:string" />
+			<xs:element name="impl" type="xs:string" />
+			<xs:element name="impuList" minOccurs="0" maxOccurs="unbounded" nillable="true" type="xs:string" />
+			<xs:element name="extraShortNumber" type="xs:string" />
+			<xs:element name="portalAccount" type="tns:portalAccount" />
+			<xs:element name="address" type="tns:userAddress" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="statusEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NONE" />
+			<xs:enumeration value="ACTIVE" />
+			<xs:enumeration value="BLOCKED" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="portalAccount">
+		<xs:sequence>
+			<xs:element name="enableAccount" type="tns:statusEnum" />
+			<xs:element name="loginName" type="xs:string" />
+			<xs:element name="passWord" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="userAddress">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+			<xs:element name="namePrefix" type="xs:string" />
+			<xs:element name="businessPhoneNumber" type="xs:string" />
+			<xs:element name="homePhoneNumber" type="xs:string" />
+			<xs:element name="mobilePhoneNumber" type="xs:string" />
+			<xs:element name="faxNumber" type="xs:string" />
+			<xs:element name="postalCode" type="xs:string" />
+			<xs:element name="country" type="xs:string" />
+			<xs:element name="state" type="xs:string" />
+			<xs:element name="city" type="xs:string" />
+			<xs:element name="street" type="xs:string" />
+			<xs:element name="location" type="xs:string" />
+			<xs:element name="roomNumber" type="xs:string" />
+			<xs:element name="email" type="xs:string" />
+			<xs:element name="url" type="xs:string" />
+			<xs:element name="comment" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<!-- deleteUser -->
+	<xs:element name="deleteUserRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="delUser"
+					nillable="true" type="tns:delUser" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="delUser">
+		<xs:sequence>
+			<xs:element name="fullNumber" type="xs:string" />
+			<xs:element name="grpID" type="xs:string" />
+			<xs:element name="shortNumber" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<!-- modifyUser -->
+	<xs:element name="modifyUserRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0" name="userInfo"
+					nillable="true" type="tns:userInfo" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- getUser -->
+	<xs:element name="getUserRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fullNumber" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- getAllUsers -->
+	<xs:element name="getAllUsersRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="grpID" type="xs:string" />
+				<xs:element name="pagingInfo" type="tns:pagingInfo" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="pagingInfo">
+		<xs:sequence>
+			<xs:element name="offset" type="xs:string" />
+			<xs:element name="number" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+	<!-- modifyShortNumber -->
+	<xs:element name="modifyShortNumberRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" minOccurs="0"
+					name="modifyShortNumberModel" nillable="true" type="tns:modifyShortNumberModel" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="modifyShortNumberModel">
+		<xs:sequence>
+			<xs:element name="fullNumber" type="xs:string" />
+			<xs:element name="grpID" type="xs:string" />
+			<xs:element name="shortNumber" type="xs:string" />
+			<xs:element name="newShortNumber" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
