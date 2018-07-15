@@ -1,9 +1,12 @@
 package com.scp.cygl.soap2mml.ws.user;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+
+import com.scp.cygl.mml.CreateUserRequestMML;
 
 @Endpoint
 public class UserEndpoint {
@@ -14,7 +17,32 @@ public class UserEndpoint {
 	public Response create(@RequestPayload CreateUserRequest request) {
 		Response response = new Response();
 		response.setResultCode("0");
-		response.setResultDesc("ok");
+		CreateUserRequestMML mml = new CreateUserRequestMML();
+		if (request.getUserInfo() != null && request.getUserInfo().size() > 0) {
+			for (UserInfo userinfo : request.getUserInfo()) {
+				User user = userinfo.getUser();
+				UserAddInfo userAddInfo = userinfo.getUserAddInfo();
+				mml.setGRPID(userinfo.getUser().getGrpID());
+				if (StringUtils.isNotBlank(mml.getNOTABLE())) {
+					StringBuffer sb = new StringBuffer(mml.getNOTABLE() + "&");
+					sb.append(StringUtils.isNotBlank(user.getShortNumber()) ? user.getShortNumber() : "");
+					sb.append("|");
+					sb.append(StringUtils.isNotBlank(userAddInfo.getAddress().getMobilePhoneNumber()) ? userAddInfo.getAddress().getMobilePhoneNumber() : "");
+					sb.append("|");
+					sb.append(StringUtils.isNotBlank(userAddInfo.getAddress().getName()) ? userAddInfo.getAddress().getName() : "");
+					mml.setNOTABLE(sb.toString());
+				} else {
+					StringBuffer sb = new StringBuffer();
+					sb.append(StringUtils.isNotBlank(user.getShortNumber()) ? user.getShortNumber() : "");
+					sb.append("|");
+					sb.append(StringUtils.isNotBlank(userAddInfo.getAddress().getMobilePhoneNumber()) ? userAddInfo.getAddress().getMobilePhoneNumber() : "");
+					sb.append("|");
+					sb.append(StringUtils.isNotBlank(userAddInfo.getAddress().getName()) ? userAddInfo.getAddress().getName() : "");
+					mml.setNOTABLE(sb.toString());
+				}
+			}
+			response.setResultDesc(mml.toString());
+		}
 		return response;
 	}
 
