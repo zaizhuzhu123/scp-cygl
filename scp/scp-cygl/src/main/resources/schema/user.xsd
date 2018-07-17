@@ -1,5 +1,5 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.ws.soap2mml.cygl.scp.com/user" targetNamespace="http://www.ws.soap2mml.cygl.scp.com/user"
+	xmlns:tns="http://www.cygl.cmd.scp.com/ws" targetNamespace="http://www.cygl.cmd.scp.com/ws"
 	elementFormDefault="qualified">
 	<xs:element name="response">
 		<xs:complexType>
@@ -15,6 +15,14 @@
 			<xs:sequence>
 				<xs:element maxOccurs="unbounded" minOccurs="0" name="userInfo"
 					nillable="true" type="tns:userInfo" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="createUserResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="resultcode" type="xs:string" />
+				<xs:element name="resultdesc" type="xs:string" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -52,7 +60,8 @@
 			<xs:element name="serviceNo" type="xs:string" />
 			<xs:element name="areaNo" type="xs:string" />
 			<xs:element name="impl" type="xs:string" />
-			<xs:element name="impuList" minOccurs="0" maxOccurs="unbounded" nillable="true" type="xs:string" />
+			<xs:element name="impuList" minOccurs="0" maxOccurs="unbounded"
+				nillable="true" type="xs:string" />
 			<xs:element name="extraShortNumber" type="xs:string" />
 			<xs:element name="portalAccount" type="tns:portalAccount" />
 			<xs:element name="address" type="tns:userAddress" />

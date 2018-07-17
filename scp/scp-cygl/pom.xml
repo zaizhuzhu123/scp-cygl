@@ -36,11 +36,6 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
-				<!-- spring-ws -->
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-ws</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- apache commons -->
