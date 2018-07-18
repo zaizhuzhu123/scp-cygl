@@ -1,39 +1,39 @@
 package com.scp.cmd.cygl.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.CharsetUtil;
 
 import java.net.InetAddress;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.scp.cmd.cygl.util.ByteUtil;
+
 @Component
 @Qualifier("serverHandler")
 @ChannelHandler.Sharable
-public class ServerHandler extends SimpleChannelInboundHandler<String> {
+public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 	private static final Logger log = LoggerFactory.getLogger(ServerHandler.class);
 
 	@Override
-	public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-		log.info("client msg:" + msg);
-		String clientIdToLong = ctx.channel().id().asLongText();
-		log.info("client long id:" + clientIdToLong);
-		String clientIdToShort = ctx.channel().id().asShortText();
-		log.info("client short id:" + clientIdToShort);
-		System.out.println(msg);
-		if (msg.indexOf("bye") != -1) {
-			// close
-			ctx.channel().close();
-		} else {
-			// send to client
-			ctx.channel().writeAndFlush("你的消息是:" + msg);
-		}
+	public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+		ByteBuf buf = (ByteBuf) msg;
+		byte[] receiveMsgBytes = new byte[buf.readableBytes()];
+		buf.readBytes(receiveMsgBytes);
+		String content = ByteUtil.bytesToHexString(receiveMsgBytes);
+		System.out.println(content);
+		System.out.println(ByteUtil.hexStr2Str(content));
+		String resultString = ByteUtil.str2HexStr("你的信息是:" + content);
+		ByteBuf resp = Unpooled.copiedBuffer(resultString.getBytes());
+		ctx.channel().writeAndFlush(resp);
 	}
 
 	@Override

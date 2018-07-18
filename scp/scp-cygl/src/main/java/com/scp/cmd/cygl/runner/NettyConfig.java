@@ -1,14 +1,15 @@
 package com.scp.cmd.cygl.runner;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import com.scp.cmd.cygl.netty.HelloClientInitializer;
 import com.scp.cmd.cygl.netty.StringProtocolInitalizer;
 
 /**
@@ -30,29 +32,33 @@ import com.scp.cmd.cygl.netty.StringProtocolInitalizer;
 public class NettyConfig {
 
 	// 读取yml中配置
-	@Value("${boss.thread.count}")
-	private int bossCount;
+	@Value("${myserver.boss.thread.count}")
+	private int myserver_bossCount;
 
-	@Value("${worker.thread.count}")
-	private int workerCount;
+	@Value("${myserver.worker.thread.count}")
+	private int myserver_workerCount;
 
-	@Value("${tcp.port}")
-	private int tcpPort;
+	@Value("${myserver.tcp.port}")
+	private int myserver_tcpPort;
 
-	@Value("${so.keepalive}")
-	private boolean keepAlive;
+	@Value("${myserver.so.keepalive}")
+	private boolean myserver_keepAlive;
 
-	@Value("${so.backlog}")
-	private int backlog;
+	@Value("${myserver.so.backlog}")
+	private int myserver_backlog;
 
 	@Autowired
 	@Qualifier("springProtocolInitializer")
 	private StringProtocolInitalizer protocolInitalizer;
 
+	@Autowired
+	@Qualifier("clientInitializer")
+	private HelloClientInitializer clientInitializer;
+
 	// bootstrap配置
 	@SuppressWarnings("unchecked")
 	@Bean(name = "serverBootstrap")
-	public ServerBootstrap bootstrap() {
+	public ServerBootstrap serverBootstrap() {
 		ServerBootstrap b = new ServerBootstrap();
 		b.group(bossGroup(), workerGroup()).channel(NioServerSocketChannel.class).childHandler(protocolInitalizer);
 		Map<ChannelOption<?>, Object> tcpChannelOptions = tcpChannelOptions();
@@ -64,26 +70,33 @@ public class NettyConfig {
 		return b;
 	}
 
+	@Bean(name = "clientBootstrap")
+	public Bootstrap clientBootstrap() {
+		Bootstrap b = new Bootstrap();
+		b.group(workerGroup()).channel(NioSocketChannel.class).handler(clientInitializer);
+		return b;
+	}
+
 	@Bean(name = "bossGroup", destroyMethod = "shutdownGracefully")
 	public NioEventLoopGroup bossGroup() {
-		return new NioEventLoopGroup(bossCount);
+		return new NioEventLoopGroup(myserver_bossCount);
 	}
 
 	@Bean(name = "workerGroup", destroyMethod = "shutdownGracefully")
 	public NioEventLoopGroup workerGroup() {
-		return new NioEventLoopGroup(workerCount);
+		return new NioEventLoopGroup(myserver_workerCount);
 	}
 
 	@Bean(name = "tcpSocketAddress")
 	public InetSocketAddress tcpPort() {
-		return new InetSocketAddress(tcpPort);
+		return new InetSocketAddress(myserver_tcpPort);
 	}
 
 	@Bean(name = "tcpChannelOptions")
 	public Map<ChannelOption<?>, Object> tcpChannelOptions() {
 		Map<ChannelOption<?>, Object> options = new HashMap<ChannelOption<?>, Object>();
-		options.put(ChannelOption.SO_KEEPALIVE, keepAlive);
-		options.put(ChannelOption.SO_BACKLOG, backlog);
+		options.put(ChannelOption.SO_KEEPALIVE, myserver_keepAlive);
+		options.put(ChannelOption.SO_BACKLOG, myserver_backlog);
 		return options;
 	}
 
