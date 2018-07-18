@@ -9,6 +9,7 @@ public class MyEncoder extends MessageToByteEncoder<String> {
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, String msg, ByteBuf out) throws Exception {
+
 		out.writeBytes(Unpooled.copiedBuffer((msg).getBytes()));
 	}
 }
