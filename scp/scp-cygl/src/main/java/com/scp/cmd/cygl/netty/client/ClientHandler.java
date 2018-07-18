@@ -2,10 +2,13 @@ package com.scp.cmd.cygl.netty.client;
 
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.scp.cmd.cygl.netty.server.ServerHandler;
 import com.scp.cmd.cygl.util.ByteUtil;
 
 import io.netty.buffer.ByteBuf;
@@ -18,22 +21,19 @@ import io.netty.channel.SimpleChannelInboundHandler;
 @Component
 @Qualifier("clientHandler")
 @ChannelHandler.Sharable
-public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class ClientHandler extends SimpleChannelInboundHandler<String> {
+	private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
 	@Autowired
 	private NIOClient client;
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-		ByteBuf buf = (ByteBuf) msg;
-		byte[] receiveMsgBytes = new byte[buf.readableBytes()];
-		buf.readBytes(receiveMsgBytes);
-		String content = ByteUtil.bytesToHexString(receiveMsgBytes);
-		System.out.println(content);
-		System.out.println(ByteUtil.hexStr2Str(content));
-		String resultString = ByteUtil.str2HexStr("服务端返回的信息时:" + content);
-		ByteBuf resp = Unpooled.copiedBuffer(resultString.getBytes());
-		ctx.channel().writeAndFlush(resp);
+	protected void channelRead0(ChannelHandlerContext ctx, String content) throws Exception {
+		log.info("16进制信息是:" + content);
+		String resultString = ByteUtil.str2HexStr("你的信息是:" + content);
+		String realContent = ByteUtil.hexStr2Str(content);
+		log.info("真实信息是:" + realContent);
+		ctx.channel().writeAndFlush(resultString);
 	}
 
 	@Override

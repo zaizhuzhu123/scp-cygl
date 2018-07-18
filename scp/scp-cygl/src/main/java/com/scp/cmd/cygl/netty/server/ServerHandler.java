@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.scp.cmd.cygl.util.ByteUtil;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -18,20 +16,16 @@ import io.netty.channel.SimpleChannelInboundHandler;
 @Component
 @Qualifier("serverHandler")
 @ChannelHandler.Sharable
-public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class ServerHandler extends SimpleChannelInboundHandler<String> {
 	private static final Logger log = LoggerFactory.getLogger(ServerHandler.class);
 
 	@Override
-	public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-		ByteBuf buf = (ByteBuf) msg;
-		byte[] receiveMsgBytes = new byte[buf.readableBytes()];
-		buf.readBytes(receiveMsgBytes);
-		String content = ByteUtil.bytesToHexString(receiveMsgBytes);
-		System.out.println(content);
-		System.out.println(ByteUtil.hexStr2Str(content));
+	public void channelRead0(ChannelHandlerContext ctx, String content) throws Exception {
+		log.info("16进制信息是:" + content);
 		String resultString = ByteUtil.str2HexStr("你的信息是:" + content);
-		ByteBuf resp = Unpooled.copiedBuffer(resultString.getBytes());
-		ctx.channel().writeAndFlush(resp);
+		String realContent = ByteUtil.hexStr2Str(content);
+		log.info("真实信息是:" + realContent);
+		ctx.channel().writeAndFlush(resultString);
 	}
 
 	@Override
