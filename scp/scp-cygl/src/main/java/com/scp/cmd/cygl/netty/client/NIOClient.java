@@ -1,16 +1,15 @@
 package com.scp.cmd.cygl.netty.client;
 
-import javax.annotation.PostConstruct;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+
 import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 
 @Component
 public class NIOClient {
@@ -24,15 +23,15 @@ public class NIOClient {
 
 	private Channel channel;
 
-	@PostConstruct
-	public void start() throws Exception {
-		// 连接服务端
-		try {
-			run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	// @PostConstruct
+	// public void start() throws Exception {
+	// // 连接服务端
+	// try {
+	// run();
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	public void run() throws InterruptedException {
 		channel = b.connect().addListener(clientConnectionListener).sync().channel();

@@ -1,5 +1,10 @@
 package com.scp.cmd.cygl.netty.client;
 
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.EventLoop;
+import io.netty.channel.SimpleChannelInboundHandler;
+
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -8,15 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.scp.cmd.cygl.netty.server.ServerHandler;
 import com.scp.cmd.cygl.util.ByteUtil;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.EventLoop;
-import io.netty.channel.SimpleChannelInboundHandler;
 
 @Component
 @Qualifier("clientHandler")

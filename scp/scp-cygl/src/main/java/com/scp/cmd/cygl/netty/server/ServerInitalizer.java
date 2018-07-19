@@ -21,6 +21,9 @@ public class ServerInitalizer extends ChannelInitializer<SocketChannel> {
 	@Autowired
 	ServerHandler serverHandler;
 
+	@Autowired
+	ServerInboundHandler serverInHandler;
+
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
@@ -28,9 +31,12 @@ public class ServerInitalizer extends ChannelInitializer<SocketChannel> {
 		// 读半包的解码器
 
 		// encoder
-		pipeline.addLast(new ServerDecoder());
-		pipeline.addLast(new ServerEncoder());
-		pipeline.addLast("handler", serverHandler);
+		// pipeline.addLast(new ServerDecoder());
+		// pipeline.addLast(new ServerEncoder());
+		// pipeline.addLast("handler", serverHandler);
+
+		// 纯代理
+		pipeline.addLast(serverInHandler);
 	}
 
 	public ServerHandler getServerHandler() {
