@@ -1,14 +1,5 @@
 package com.scp.cmd.cygl.runner;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +12,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import com.scp.cmd.cygl.netty.HelloClientInitializer;
-import com.scp.cmd.cygl.netty.StringProtocolInitalizer;
+import com.scp.cmd.cygl.netty.client.ClientInitializer;
+import com.scp.cmd.cygl.netty.server.ServerInitalizer;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 
 /**
  * @author 杨红星
@@ -47,13 +45,19 @@ public class NettyConfig {
 	@Value("${myserver.so.backlog}")
 	private int myserver_backlog;
 
+	@Value("${mml.host}")
+	private String mml_host;
+
+	@Value("${mml.port}")
+	private int mml_port;
+
 	@Autowired
 	@Qualifier("springProtocolInitializer")
-	private StringProtocolInitalizer protocolInitalizer;
+	private ServerInitalizer protocolInitalizer;
 
 	@Autowired
 	@Qualifier("clientInitializer")
-	private HelloClientInitializer clientInitializer;
+	private ClientInitializer clientInitializer;
 
 	// bootstrap配置
 	@SuppressWarnings("unchecked")
@@ -70,10 +74,18 @@ public class NettyConfig {
 		return b;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Bean(name = "clientBootstrap")
 	public Bootstrap clientBootstrap() {
 		Bootstrap b = new Bootstrap();
-		b.group(workerGroup()).channel(NioSocketChannel.class).handler(clientInitializer);
+		b.group(clientGroup()).channel(NioSocketChannel.class).handler(clientInitializer);
+		Map<ChannelOption<?>, Object> tcpChannelOptions = tcpChannelOptions();
+		Set<ChannelOption<?>> keySet = tcpChannelOptions.keySet();
+		for (@SuppressWarnings("rawtypes")
+		ChannelOption option : keySet) {
+			b.option(option, tcpChannelOptions.get(option));
+		}
+		b.remoteAddress(mml_host, mml_port);
 		return b;
 	}
 
@@ -84,6 +96,11 @@ public class NettyConfig {
 
 	@Bean(name = "workerGroup", destroyMethod = "shutdownGracefully")
 	public NioEventLoopGroup workerGroup() {
+		return new NioEventLoopGroup(myserver_workerCount);
+	}
+
+	@Bean(name = "clientGroup", destroyMethod = "shutdownGracefully")
+	public NioEventLoopGroup clientGroup() {
 		return new NioEventLoopGroup(myserver_workerCount);
 	}
 
@@ -98,16 +115,6 @@ public class NettyConfig {
 		options.put(ChannelOption.SO_KEEPALIVE, myserver_keepAlive);
 		options.put(ChannelOption.SO_BACKLOG, myserver_backlog);
 		return options;
-	}
-
-	@Bean(name = "stringEncoder")
-	public StringEncoder stringEncoder() {
-		return new StringEncoder();
-	}
-
-	@Bean(name = "stringDecoder")
-	public StringDecoder stringDecoder() {
-		return new StringDecoder();
 	}
 
 	/**
